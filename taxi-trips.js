@@ -17,7 +17,7 @@ async function findAllRegions(){
 //find all the regions
 let region = await pool.query('SELECT * FROM region');
 region = region.rows;
-console.log(region);
+console.log(region)
 return region;
 }
 
