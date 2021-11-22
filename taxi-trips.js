@@ -1,15 +1,9 @@
 module.exports = function (pool) {
 
-    // -- insert into taxi(reg_number) values ('CA-123-678');
-    // -- insert into taxi(reg_number) values ('CY-172872');
-    // -- insert into taxi(reg_number) values ('NZZ-185-GP');
-    // -- insert into taxi(reg_number) values ('RMH-486-GP');
-    // -- insert into taxi(reg_number) values ('FX-92-BJ-GP');
-    // -- insert into taxi(reg_number) values ('NP 40351');
-    // -- insert into taxi(reg_number) values ('NU 102-478');
-    // -- insert into taxi(reg_number) values ('KM-786-ZN');
+    
 async function totalTripCount(){
-    //return the total number of trips made
+    let count =  await pool.query('SELECT COUNT(*) FROM trip');
+    return count;
     
 }
 
@@ -24,29 +18,21 @@ let regions =region.map(function (obj) {
 return regions;
 }
 
-async function getTaxi(reg){
-    let town;
-    if(reg.startsWith('CA') || reg.startsWith('CY') ){
-        town = 'Cape Town';
-    }
-   else if(reg.endsWith('GP') ){
-        town = 'Gauteng';
-    }
-    else{
-        town = 'Durban';
-    }
-    let routeID = await pool.query('SELECT id FROM region WHERE name = $1',[town]);
-   routeID=routeID.rows[0].id;
-   let taxi = await pool.query('INSERT INTO taxi(reg_number,route_id) VALUES($1,$2)',[reg,routeID]);
-   return taxi.rows;
-}
-async function getTrips(regNumber){
-    await getTaxi(regNumber);
-    let trips = await pool.query('SELECT ')
 
-}
 async function findTaxisForRegion(region){
 //find all the taxis for a given region - use region name as look up
+
+let regID = await pool.query('SELECT id FROM region WHERE name = $1',[region]);
+regID = regID.rows[0].id;
+let find = await pool.query('SELECT * FROM trip WHERE reg_id = $1',[regID]);
+find = find.rows;
+let found;
+for (const i of find){
+    found = await pool.query('SELECT * FROM taxi WHERE id=$1',[i]) ;
+    return found.rows;
+}
+console.log(find);
+
 
 }
 
@@ -77,12 +63,10 @@ async function findTotalIncomeByRegion(){
 
 return{
     totalTripCount,
-    getTrips,
     findAllRegions,
     findTaxisForRegion,
     findTripsByRegNumber,
     findTripsByRegion,
-    getTaxi,
     findIncomeByRegNumber,
     findTotalIncomePerTaxi,
     findTotalIncome,
