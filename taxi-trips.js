@@ -17,12 +17,37 @@ async function findAllRegions(){
 //find all the regions
 let region = await pool.query('SELECT * FROM region');
 region = region.rows;
-console.log(region)
-return region;
+let regions =region.map(function (obj) {
+    return  obj.name;
+  });
+
+return regions;
 }
 
-async function findTaxisForRegion(){
+async function getTaxi(reg){
+    let town;
+    if(reg.startsWith('CA') || reg.startsWith('CY') ){
+        town = 'Cape Town';
+    }
+   else if(reg.endsWith('GP') ){
+        town = 'Gauteng';
+    }
+    else{
+        town = 'Durban';
+    }
+    let routeID = await pool.query('SELECT id FROM region WHERE name = $1',[town]);
+   routeID=routeID.rows[0].id;
+   let taxi = await pool.query('INSERT INTO taxi(reg_number,route_id) VALUES($1,$2)',[reg,routeID]);
+   return taxi.rows;
+}
+async function getTrips(regNumber){
+    await getTaxi(regNumber);
+    let trips = await pool.query('SELECT ')
+
+}
+async function findTaxisForRegion(region){
 //find all the taxis for a given region - use region name as look up
+
 }
 
 async function findTripsByRegNumber(){
@@ -52,10 +77,12 @@ async function findTotalIncomeByRegion(){
 
 return{
     totalTripCount,
+    getTrips,
     findAllRegions,
     findTaxisForRegion,
     findTripsByRegNumber,
     findTripsByRegion,
+    getTaxi,
     findIncomeByRegNumber,
     findTotalIncomePerTaxi,
     findTotalIncome,

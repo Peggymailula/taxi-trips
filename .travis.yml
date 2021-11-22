@@ -4,7 +4,7 @@ env:
   - DATABASE_URL=postgresql://postgres@localhost:5432/taxi-app
 
 node_js:  
-  - "12.22.5"
+  - "16.6.1"
 
   
 
